@@ -1,12 +1,37 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { ChanSimple } from "../../components/ChanSimple";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Frontflip } from "../../components/Frontflip";
 import SobelEffect from "../../components/SobelEffect";
-import AnimationPreview from "../../components/AnimationPreview";
-import { OrbitControls } from "@react-three/drei";
-import React from "react";
-import * as THREE from "three";
+import React, { useMemo } from "react";
+
+function ChanWrapper({
+  animationName,
+  timePosition,
+  loop,
+}: Readonly<{
+  animationName: string;
+  timePosition?: number;
+  loop: boolean;
+}>) {
+  const { size, camera } = useThree();
+  const position = useMemo(() => {
+    const width = size.width / camera.zoom;
+    const height = size.height / camera.zoom;
+    return [-width / 2 + 1, -height / 2, 0] as [number, number, number]; // adjust Y margin here
+  }, [size, camera.zoom]);
+
+  return (
+    <Frontflip
+      animationName={animationName}
+      timePosition={timePosition}
+      loop={loop}
+      position={position}
+      scale={[2, 2, 2]}
+      rotation={[0, Math.PI / 2, 0]}
+    />
+  );
+}
 
 export default function Character() {
   const [currentPose, setCurrentPose] = React.useState<{
@@ -19,29 +44,29 @@ export default function Character() {
     loop: false,
   });
 
-  // Note: This model currently has one Mixamo animation
+  // Note: This model has the Frontflip animation from Mixamo
   // Check browser console for available animations when component loads
   const poses = [
     {
-      name: "T-Pose (Static)",
+      name: "Starting Pose",
       animationName: "Armature|mixamo.com|Layer0",
       timePosition: 0,
       loop: false,
     },
     {
-      name: "Mid Animation",
+      name: "Mid Frontflip",
       animationName: "Armature|mixamo.com|Layer0",
-      timePosition: 1.5,
+      timePosition: 0.8,
       loop: false,
     },
     {
-      name: "End Animation",
+      name: "Landing Pose",
       animationName: "Armature|mixamo.com|Layer0",
-      timePosition: 3.0,
+      timePosition: 1.6,
       loop: false,
     },
     {
-      name: "Play Animation",
+      name: "Play Frontflip",
       animationName: "Armature|mixamo.com|Layer0",
       loop: true,
     },
@@ -51,7 +76,7 @@ export default function Character() {
     <div className="relative w-full h-screen">
       {/* Pose Controls */}
       <div className="absolute top-4 left-4 z-10 bg-black/80 p-4 rounded">
-        <h3 className="text-white mb-2">Poses:</h3>
+        <h3 className="text-white mb-2">Frontflip Poses:</h3>
         <div className="space-y-2">
           {poses.map((pose) => (
             <button
@@ -71,25 +96,21 @@ export default function Character() {
       </div>
 
       <Canvas
-        camera={{ position: [0, 0, 10], fov: 75 }}
+        orthographic
+        camera={{ zoom: 100, position: [0, 0, 10] }}
         className="w-full h-screen"
         style={{ background: "black" }}
         onCreated={() => console.log("Canvas created successfully!")}
       >
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
-
         {/* Your character */}
-        <ChanSimple
+        <ChanWrapper
           animationName={currentPose.animationName}
           timePosition={currentPose.timePosition}
           loop={currentPose.loop}
-          position={[0, -4, 0]}
-          rotation={[0, Math.PI / 2, 0]}
-          scale={[2, 2, 2]}
         />
-
-        <OrbitControls enableZoom={true} enablePan={true} enableRotate={true} />
+        <SobelEffect enabled={true} />
       </Canvas>
     </div>
   );
