@@ -57,7 +57,7 @@ export function ChanSimple({
 
   const clone = React.useMemo(
     () => SkeletonUtils.clone(modelScene),
-    [modelScene]
+    [modelScene],
   );
   const { nodes, materials } = useGraph(clone) as unknown as {
     nodes: NodesType;
@@ -78,7 +78,7 @@ export function ChanSimple({
     console.log(
       animations.map((a) => a.name),
       clip,
-      clip.tracks.map((t) => t.name)
+      clip.tracks.map((t) => t.name),
     );
 
     action.reset().play();

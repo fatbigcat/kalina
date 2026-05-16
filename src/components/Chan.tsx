@@ -96,7 +96,7 @@ export function Chan({
   React.useEffect(() => {
     console.log(
       "Available animations:",
-      animations.map((anim) => anim.name)
+      animations.map((anim) => anim.name),
     );
     console.log("Available actions:", Object.keys(actions));
 

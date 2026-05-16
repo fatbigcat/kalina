@@ -57,15 +57,22 @@ function MenuItem({ href, label }: { href: string; label: string }) {
 
 type AnimatedLetterProps = Readonly<{
   char: string;
+  index: number;
+  position: { x: number; y: number };
+  onMove: (index: number, pos: { x: number; y: number }) => void;
   resetSignal: number;
 }>;
 
-function AnimatedLetter({ char, resetSignal }: AnimatedLetterProps) {
+function AnimatedLetter({
+  char,
+  index,
+  position,
+  onMove,
+  resetSignal,
+}: AnimatedLetterProps) {
   const controls = useAnimation();
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    setPosition({ x: 0, y: 0 });
     controls.set({ rotate: 0, scale: 1 });
   }, [resetSignal, controls]);
 
@@ -84,10 +91,11 @@ function AnimatedLetter({ char, resetSignal }: AnimatedLetterProps) {
     _event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo,
   ) => {
-    setPosition((prev) => ({
-      x: prev.x + info.offset.x,
-      y: prev.y + info.offset.y,
-    }));
+    const newPos = {
+      x: position.x + info.offset.x,
+      y: position.y + info.offset.y,
+    };
+    onMove(index, newPos);
   };
 
   return (
@@ -127,6 +135,22 @@ export default function HomePage() {
   const mobileTitleMeasureRef = useRef<HTMLSpanElement | null>(null);
   const [mobileTitleFontSizePx, setMobileTitleFontSizePx] = useState(120);
   const [resetSignal, setResetSignal] = useState(0);
+  const [letterPositions, setLetterPositions] = useState(() =>
+    NAME_CHARS.map(() => ({ x: 0, y: 0 })),
+  );
+
+  // if any letter is moved, show the reset icon
+  const anyLetterMoved = letterPositions.some(
+    (pos) => pos.x !== 0 || pos.y !== 0,
+  );
+
+  const handleLetterMove = (index: number, pos: { x: number; y: number }) => {
+    setLetterPositions((prev) => {
+      const next = [...prev];
+      next[index] = pos;
+      return next;
+    });
+  };
 
   useEffect(() => {
     const fitMobileTitleToWidth = () => {
@@ -165,35 +189,40 @@ export default function HomePage() {
 
   const resetLetters = () => {
     setResetSignal((prev) => prev + 1);
+    setLetterPositions(NAME_CHARS.map(() => ({ x: 0, y: 0 })));
   };
 
   return (
     <>
-      <button
-        type="button"
-        onClick={resetLetters}
-        aria-label="Reset letters"
-        title="Reset letters"
-        className="fixed left-6 top-6 z-60 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-black/40 text-white backdrop-blur-sm transition hover:bg-white/10"
-      >
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          className="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M20 11a8 8 0 1 0 2.2 5.5" />
-          <path d="M20 4v7h-7" />
-        </svg>
-      </button>
-
       <header className="fixed top-0 z-50 w-full">
-        <div className="flex items-end justify-center px-6 py-6 md:justify-end">
-          <nav className="flex items-center gap-3">
+        <div className="flex items-end justify-center px-6 py-6 md:justify-end relative">
+          {anyLetterMoved && (
+            <span
+              onClick={resetLetters}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  resetLetters();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Reset letters"
+              title="Reset letters"
+              className="absolute left-6 top-8 h-8 w-8 flex items-center justify-center text-white cursor-pointer"
+              style={{ opacity: 0.3 }}
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 30 30"
+                className="h-6 w-6"
+                fill="currentColor"
+              >
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C15.73 20 18.84 17.45 19.73 14H17.65C16.83 16.33 14.61 18 12 18C8.69 18 6 15.31 6 12C6 8.69 8.69 6 12 6C13.66 6 15.14 6.69 16.22 7.78L13 11H20V4L17.65 6.35Z" />
+              </svg>
+            </span>
+          )}
+          <nav className="flex items-center gap-3 w-full md:justify-end justify-center">
             {items.map((it) => (
               <MenuItem key={it.href} href={it.href} label={it.label} />
             ))}
@@ -247,6 +276,9 @@ export default function HomePage() {
               <AnimatedLetter
                 key={`${char}-${i}-${resetSignal}`}
                 char={char}
+                index={i}
+                position={letterPositions[i]}
+                onMove={handleLetterMove}
                 resetSignal={resetSignal}
               />
             ))}
@@ -272,6 +304,9 @@ export default function HomePage() {
               <AnimatedLetter
                 key={`desktop-${char}-${i}-${resetSignal}`}
                 char={char}
+                index={i}
+                position={letterPositions[i]}
+                onMove={handleLetterMove}
                 resetSignal={resetSignal}
               />
             ))}
