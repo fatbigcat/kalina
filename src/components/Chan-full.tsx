@@ -5,62 +5,13 @@ Command: npx gltfjsx@6.5.3 src/models/Chan.glb --output src/components/Chan-full
 
 import * as THREE from 'three'
 import React from 'react'
-import { useGraph } from '@react-three/fiber'
+import { type ThreeElements } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
-import { GLTF, SkeletonUtils } from 'three-stdlib'
 
-type ActionName = 'bodychan-rig' | 'bodychan-rig.001' | 'bodychan-rig.002' | 'bodychan-rig.003' | 'bodychan-rigAction' | 'bodykun-rigAction'
-
-interface GLTFAction extends THREE.AnimationClip {
-  name: ActionName
-}
-
-type GLTFResult = GLTF & {
-  nodes: {
-    root: THREE.Bone
-    ['MCH-torsoparent']: THREE.Bone
-    ['MCH-spinehip_ik']: THREE.Bone
-    ['MCH-shoulderikL']: THREE.Bone
-    ['MCH-hand_ikparentL']: THREE.Bone
-    ['MCH-upper_arm_ik_targetparentL']: THREE.Bone
-    ['MCH-forearm_ik_midparentL']: THREE.Bone
-    ['MCH-held-objectparentL']: THREE.Bone
-    ['MCH-f_index01_ikparentL']: THREE.Bone
-    ['MCH-thumb01_ikparentL']: THREE.Bone
-    ['MCH-f_middle01_ikparentL']: THREE.Bone
-    ['MCH-f_ring01_ikparentL']: THREE.Bone
-    ['MCH-f_pinky01_ikparentL']: THREE.Bone
-    ['MCH-shoulderikR']: THREE.Bone
-    ['MCH-hand_ikparentR']: THREE.Bone
-    ['MCH-upper_arm_ik_targetparentR']: THREE.Bone
-    ['MCH-forearm_ik_midparentR']: THREE.Bone
-    ['MCH-held-objectparentR']: THREE.Bone
-    ['MCH-f_index01_ikparentR']: THREE.Bone
-    ['MCH-thumb01_ikparentR']: THREE.Bone
-    ['MCH-f_middle01_ikparentR']: THREE.Bone
-    ['MCH-f_ring01_ikparentR']: THREE.Bone
-    ['MCH-f_pinky01_ikparentR']: THREE.Bone
-    ['MCH-foot_ikparentL']: THREE.Bone
-    ['MCH-thigh_ik_targetparentL']: THREE.Bone
-    ['MCH-shin_ik_midparentL']: THREE.Bone
-    ['MCH-foot_ikparentR']: THREE.Bone
-    ['MCH-thigh_ik_targetparentR']: THREE.Bone
-    ['MCH-shin_ik_midparentR']: THREE.Bone
-    ['MCH-lip_armBL001']: THREE.Bone
-    ['MCH-lip_armBR001']: THREE.Bone
-    ['MCH-lip_armTL001']: THREE.Bone
-    ['MCH-lip_armTR001']: THREE.Bone
-  }
-  materials: {}
-  animations: GLTFAction[]
-}
-
-export function Model(props: JSX.IntrinsicElements['group']) {
-  const group = React.useRef<THREE.Group>()
-  const { scene, animations } = useGLTF('/Chan.glb')
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
-  const { nodes, materials } = useGraph(clone) as GLTFResult
-  const { actions } = useAnimations(animations, group)
+export function Model(props: Readonly<ThreeElements['group']>) {
+  const group = React.useRef<THREE.Group>(null)
+  const { nodes, animations } = useGLTF('/Chan.glb')
+  useAnimations(animations, group)
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">

@@ -4,12 +4,19 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Center } from "@react-three/drei";
 import Notes from "@/components/Notes";
 
+type MusicSceneProps = {
+  noteColor?: string;
+  outlineColor?: string;
+  cameraPosition?: [number, number, number];
+  noteScale?: number;
+};
+
 export default function MusicScene({
   noteColor = "red",
   outlineColor = "white",
   cameraPosition = [0, 3, 12],
   noteScale = 5,
-}) {
+}: MusicSceneProps) {
   return (
     <Canvas camera={{ position: cameraPosition, fov: 45 }}>
       <ambientLight intensity={0.6} />

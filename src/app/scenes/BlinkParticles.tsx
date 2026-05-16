@@ -1,6 +1,6 @@
 "use client";
 
-import { Canvas, extend, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, shaderMaterial } from "@react-three/drei";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -98,7 +98,6 @@ const BlinkMaterial = shaderMaterial(
   }
   `
 );
-extend({ BlinkMaterial });
 
 export default function BlinkParticles() {
   return (
@@ -139,7 +138,7 @@ function StaticParticles() {
     return { positions, scales };
   }, [count, gridSize, separation]);
 
-  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
+  const material = useMemo(() => new BlinkMaterial(), []);
   const geometryRef = useRef<THREE.BufferGeometry | null>(null);
   useEffect(() => {
     if (geometryRef.current) {
@@ -154,14 +153,14 @@ function StaticParticles() {
     }
   }, [positions, scales]);
   useFrame(({ clock }) => {
-    if (materialRef.current?.uniforms?.uTime) {
-      materialRef.current.uniforms.uTime.value = clock.getElapsedTime();
+    if (material.uniforms?.uTime) {
+      material.uniforms.uTime.value = clock.getElapsedTime();
     }
   });
   return (
     <points>
       <bufferGeometry ref={geometryRef} />
-      <blinkMaterial ref={materialRef} />
+      <primitive object={material} />
     </points>
   );
 }

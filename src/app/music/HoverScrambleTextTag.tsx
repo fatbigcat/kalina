@@ -1,19 +1,21 @@
 "use client";
 import ScrambleText from "@/components/ScrambleText";
-import { useState, ElementType, ComponentPropsWithoutRef } from "react";
+import { useState, type HTMLAttributes } from "react";
 
-type Props<T extends ElementType> = {
-  as?: T;
+type TagName = "span" | "h1" | "h2" | "h3" | "p" | "div";
+
+type Props = {
+  as?: TagName;
   className?: string;
   text: string;
-} & ComponentPropsWithoutRef<T>;
+} & Omit<HTMLAttributes<HTMLElement>, "children">;
 
-export default function HoverScrambleTextTag<T extends ElementType = "span">({
+export default function HoverScrambleTextTag({
   as: Tag = "span",
   className,
   text,
   ...rest
-}: Props<T>) {
+}: Props) {
   const [hover, setHover] = useState(false);
   return (
     <Tag
