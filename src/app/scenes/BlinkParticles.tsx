@@ -96,7 +96,7 @@ const BlinkMaterial = shaderMaterial(
     if (d > 0.5) discard;
     gl_FragColor = vec4(1.0);
   }
-  `
+  `,
 );
 
 export default function BlinkParticles() {
@@ -144,11 +144,11 @@ function StaticParticles() {
     if (geometryRef.current) {
       geometryRef.current.setAttribute(
         "position",
-        new THREE.Float32BufferAttribute(positions, 3)
+        new THREE.Float32BufferAttribute(positions, 3),
       );
       geometryRef.current.setAttribute(
         "aScale",
-        new THREE.Float32BufferAttribute(scales, 1)
+        new THREE.Float32BufferAttribute(scales, 1),
       );
     }
   }, [positions, scales]);
