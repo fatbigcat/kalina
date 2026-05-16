@@ -3,9 +3,7 @@
   "main": ".open-next/worker.js",
   "name": "portfolio",
   "compatibility_date": "2026-05-16",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -21,5 +19,9 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "routes": [
+    { "pattern": "kalina.net/*", "zone_name": "kalina.net" },
+    { "pattern": "www.kalina.net/*", "zone_name": "kalina.net" }
+  ]
 }
