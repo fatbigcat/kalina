@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { motion, useAnimation, type PanInfo } from "framer-motion";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import ScrambleText from "@/components/ScrambleText";
+import Link from 'next/link';
+import { motion, useAnimation, type PanInfo } from 'framer-motion';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import ScrambleText from '@/components/ScrambleText';
 
 const items = [
-  { href: "/projects", label: "PROJECTS", underConstruction: true },
-  { href: "/music", label: "MUSIC", underConstruction: true },
-  { href: "/thoughts", label: "THOUGHTS", underConstruction: true },
+  { href: '/projects', label: 'PROJECTS', underConstruction: true },
+  { href: '/music', label: 'MUSIC', underConstruction: true },
+  { href: '/thoughts', label: 'THOUGHTS', underConstruction: true },
 ];
 
 function MenuItem({
@@ -40,11 +40,10 @@ function MenuItem({
           rest: { opacity: 0, scale: 0.9 },
           hover: { opacity: 0.22, scale: 1 },
         }}
-        transition={{ type: "spring", stiffness: 260, damping: 18 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
         style={{
-          background:
-            "radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0))",
-          filter: "blur(10px)",
+          background: 'radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0))',
+          filter: 'blur(10px)',
         }}
       />
       <motion.div
@@ -52,7 +51,7 @@ function MenuItem({
           rest: { y: 0, rotate: 0, scale: 1 },
           hover: { y: -0.3, rotate: -0.3, scale: 1 },
         }}
-        transition={{ type: "spring", stiffness: 10, damping: 200 }}
+        transition={{ type: 'spring', stiffness: 10, damping: 200 }}
       >
         <Link
           href={targetHref}
@@ -73,13 +72,7 @@ type AnimatedLetterProps = Readonly<{
   resetSignal: number;
 }>;
 
-function AnimatedLetter({
-  char,
-  index,
-  position,
-  onMove,
-  resetSignal,
-}: AnimatedLetterProps) {
+function AnimatedLetter({ char, index, position, onMove, resetSignal }: AnimatedLetterProps) {
   const controls = useAnimation();
   const letterRef = useRef<HTMLSpanElement | null>(null);
   const [dragBounds, setDragBounds] = useState<{
@@ -118,26 +111,20 @@ function AnimatedLetter({
   useLayoutEffect(() => {
     updateDragBounds();
     const onResize = () => updateDragBounds();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, [position.x, position.y]);
 
   const handleTap = () => {
     controls.start({
       rotate: [0, 1, 0],
       scale: [1, 1.06, 1],
-      transition: { duration: 0.2, ease: "easeInOut" },
+      transition: { duration: 0.2, ease: 'easeInOut' },
     });
   };
 
-  const handleDragEnd = (
-    _e: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo,
-  ) => {
-    onMove(
-      index,
-      clamp({ x: position.x + info.offset.x, y: position.y + info.offset.y }),
-    );
+  const handleDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    onMove(index, clamp({ x: position.x + info.offset.x, y: position.y + info.offset.y }));
   };
 
   return (
@@ -158,22 +145,20 @@ function AnimatedLetter({
         bounceDamping: 15,
       }}
       whileDrag={{ scale: 1.12, zIndex: 30 }}
-      style={{ x: position.x, y: position.y, touchAction: "none" }}
+      style={{ x: position.x, y: position.y, touchAction: 'none' }}
     >
       {char}
     </motion.span>
   );
 }
 
-const NAME_CHARS = "Kalina".split("");
+const NAME_CHARS = 'Kalina'.split('');
 
 export default function HomePage() {
-  const desktopTitleSize = "min(50vh, 38vw)";
-  const titleBottomTrim = "0.12em";
-  const desktopFingerprintTransform =
-    "translate(-50%, -13%) rotate(40deg) scale(2)";
-  const mobileFingerprintTransform =
-    "translate(-45%, -40%) rotate(17deg) scale(1.5)";
+  const desktopTitleSize = 'min(50vh, 38vw)';
+  const titleBottomTrim = '0.12em';
+  const desktopFingerprintTransform = 'translate(-50%, -13%) rotate(40deg) scale(2)';
+  const mobileFingerprintTransform = 'translate(-45%, -40%) rotate(17deg) scale(1.5)';
 
   const mobileTitleWrapRef = useRef<HTMLHeadingElement | null>(null);
   const mobileTitleMeasureRef = useRef<HTMLSpanElement | null>(null);
@@ -183,9 +168,7 @@ export default function HomePage() {
     NAME_CHARS.map(() => ({ x: 0, y: 0 })),
   );
 
-  const anyLetterMoved = letterPositions.some(
-    (pos) => pos.x !== 0 || pos.y !== 0,
-  );
+  const anyLetterMoved = letterPositions.some((pos) => pos.x !== 0 || pos.y !== 0);
 
   const handleLetterMove = (index: number, pos: { x: number; y: number }) => {
     setLetterPositions((prev) => {
@@ -206,18 +189,15 @@ export default function HomePage() {
       const fontSize = parseFloat(getComputedStyle(measure).fontSize);
       if (!Number.isFinite(fontSize) || fontSize <= 0) return;
       const next = (available / measured) * fontSize;
-      setMobileTitleFontSizePx((prev) =>
-        Math.abs(prev - next) < 0.25 ? prev : next,
-      );
+      setMobileTitleFontSizePx((prev) => (Math.abs(prev - next) < 0.25 ? prev : next));
     };
     fit();
     const resizeObserver = new ResizeObserver(fit);
-    if (mobileTitleWrapRef.current)
-      resizeObserver.observe(mobileTitleWrapRef.current);
-    window.addEventListener("resize", fit);
+    if (mobileTitleWrapRef.current) resizeObserver.observe(mobileTitleWrapRef.current);
+    window.addEventListener('resize', fit);
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener("resize", fit);
+      window.removeEventListener('resize', fit);
     };
   }, []);
 
@@ -234,7 +214,7 @@ export default function HomePage() {
             <span
               onClick={resetLetters}
               onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
+                if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault();
                   resetLetters();
                 }
@@ -246,12 +226,7 @@ export default function HomePage() {
               className="absolute left-6 top-8 h-8 w-8 flex items-center justify-center text-white cursor-pointer"
               style={{ opacity: 0.3 }}
             >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 30 30"
-                className="h-6 w-6"
-                fill="currentColor"
-              >
+              <svg aria-hidden="true" viewBox="0 0 30 30" className="h-6 w-6" fill="currentColor">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C15.73 20 18.84 17.45 19.73 14H17.65C16.83 16.33 14.61 18 12 18C8.69 18 6 15.31 6 12C6 8.69 8.69 6 12 6C13.66 6 15.14 6.69 16.22 7.78L13 11H20V4L17.65 6.35Z" />
               </svg>
             </span>
@@ -275,11 +250,11 @@ export default function HomePage() {
           src="/images/652973.svg"
           alt=""
           style={{
-            width: "140vw",
-            height: "140vh",
+            width: '140vw',
+            height: '140vh',
             opacity: 0.88,
             transform: desktopFingerprintTransform,
-            transformOrigin: "bottom left",
+            transformOrigin: 'bottom left',
           }}
           aria-hidden="true"
         />
@@ -288,13 +263,13 @@ export default function HomePage() {
           src="/images/652973.svg"
           alt=""
           style={{
-            width: "190vw",
-            height: "190vh",
-            maxHeight: "140vw",
-            maxWidth: "140vh",
+            width: '190vw',
+            height: '190vh',
+            maxHeight: '140vw',
+            maxWidth: '140vh',
             opacity: 0.88,
             transform: mobileFingerprintTransform,
-            transformOrigin: "bottom left",
+            transformOrigin: 'bottom left',
           }}
           aria-hidden="true"
         />
@@ -305,7 +280,7 @@ export default function HomePage() {
           ref={mobileTitleWrapRef}
           className="display_font color-primary m-0 w-full leading-none md:hidden"
           style={{
-            width: "100%",
+            width: '100%',
             fontSize: `${mobileTitleFontSizePx}px`,
             transform: `translateY(${titleBottomTrim})`,
           }}

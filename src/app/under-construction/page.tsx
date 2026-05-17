@@ -58,11 +58,11 @@ export default function UnderConstructionPage() {
         <motion.div
           drag
           dragConstraints={viewportRef}
-               dragMomentum={false}
-               dragElastic={0.08}
-               whileTap={{ scale: 1.02 }}
-               whileDrag={{ scale: 1.08, rotate: 4 }}
-               dragTransition={{ bounceStiffness: 600, bounceDamping: 18 }}
+          dragMomentum={false}
+          dragElastic={0.08}
+          whileTap={{ scale: 1.02 }}
+          whileDrag={{ scale: 1.08, rotate: 4 }}
+          dragTransition={{ bounceStiffness: 600, bounceDamping: 18 }}
           className="relative z-40 cursor-grab active:cursor-grabbing touch-none pointer-events-auto md:-translate-y-[12vh]"
         >
           <div className="relative h-[clamp(210px,38vw,400px)] w-[clamp(250px,48vw,480px)]">
