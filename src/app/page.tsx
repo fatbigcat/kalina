@@ -2,17 +2,28 @@
 
 import Link from "next/link";
 import { motion, useAnimation, type PanInfo } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ScrambleText from "@/components/ScrambleText";
 
 const items = [
-  { href: "/frontflip", label: "PROJECTS" },
-  { href: "/music", label: "MUSIC" },
-  { href: "/thoughts", label: "THOUGHTS" },
+  { href: "/projects", label: "PROJECTS", underConstruction: true },
+  { href: "/music", label: "MUSIC", underConstruction: true },
+  { href: "/thoughts", label: "THOUGHTS", underConstruction: true },
 ];
 
-function MenuItem({ href, label }: { href: string; label: string }) {
+function MenuItem({
+  href,
+  label,
+  underConstruction = false,
+}: Readonly<{
+  href: string;
+  label: string;
+  underConstruction?: boolean;
+}>) {
   const [hover, setHover] = useState(false);
+  const targetHref = underConstruction
+    ? `/under-construction?from=${encodeURIComponent(href)}`
+    : href;
 
   return (
     <motion.div
@@ -36,7 +47,6 @@ function MenuItem({ href, label }: { href: string; label: string }) {
           filter: "blur(10px)",
         }}
       />
-
       <motion.div
         variants={{
           rest: { y: 0, rotate: 0, scale: 1 },
@@ -45,7 +55,7 @@ function MenuItem({ href, label }: { href: string; label: string }) {
         transition={{ type: "spring", stiffness: 10, damping: 200 }}
       >
         <Link
-          href={href}
+          href={targetHref}
           className="relative inline-flex items-center px-2 py-2 text-white text-m font-semibold"
         >
           <ScrambleText text={label} active={hover} />
@@ -71,47 +81,81 @@ function AnimatedLetter({
   resetSignal,
 }: AnimatedLetterProps) {
   const controls = useAnimation();
+  const letterRef = useRef<HTMLSpanElement | null>(null);
+  const [dragBounds, setDragBounds] = useState<{
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+  } | null>(null);
+
+  // Calculate bounds so the letter's edge can touch the viewport edge
+  const updateDragBounds = () => {
+    const el = letterRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setDragBounds({
+      left: position.x - rect.left,
+      right: position.x + (window.innerWidth - rect.right),
+      top: position.y - rect.top,
+      bottom: position.y + (window.innerHeight - rect.bottom),
+    });
+  };
+
+  // Clamp the final position to bounds
+  const clamp = (pos: { x: number; y: number }) =>
+    dragBounds
+      ? {
+          x: Math.min(dragBounds.right, Math.max(dragBounds.left, pos.x)),
+          y: Math.min(dragBounds.bottom, Math.max(dragBounds.top, pos.y)),
+        }
+      : pos;
 
   useEffect(() => {
     controls.set({ rotate: 0, scale: 1 });
   }, [resetSignal, controls]);
 
+  useLayoutEffect(() => {
+    updateDragBounds();
+    const onResize = () => updateDragBounds();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [position.x, position.y]);
+
   const handleTap = () => {
     controls.start({
-      rotate: [0, 1.5, 0],
+      rotate: [0, 1, 0],
       scale: [1, 1.06, 1],
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
+      transition: { duration: 0.2, ease: "easeInOut" },
     });
   };
 
   const handleDragEnd = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
+    _e: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo,
   ) => {
-    const newPos = {
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y,
-    };
-    onMove(index, newPos);
+    onMove(
+      index,
+      clamp({ x: position.x + info.offset.x, y: position.y + info.offset.y }),
+    );
   };
 
   return (
     <motion.span
+      ref={letterRef}
       className="relative inline-block cursor-grab select-none active:cursor-grabbing"
       animate={controls}
       onTap={handleTap}
       onDragEnd={handleDragEnd}
       drag
+      dragConstraints={dragBounds ?? undefined}
       dragMomentum
-      dragElastic={0.32}
+      dragElastic={0.01}
       dragTransition={{
-        power: 0.35,
-        timeConstant: 220,
-        bounceStiffness: 220,
-        bounceDamping: 18,
+        power: 0.42,
+        timeConstant: 240,
+        bounceStiffness: 420,
+        bounceDamping: 15,
       }}
       whileDrag={{ scale: 1.12, zIndex: 30 }}
       style={{ x: position.x, y: position.y, touchAction: "none" }}
@@ -139,7 +183,6 @@ export default function HomePage() {
     NAME_CHARS.map(() => ({ x: 0, y: 0 })),
   );
 
-  // if any letter is moved, show the reset icon
   const anyLetterMoved = letterPositions.some(
     (pos) => pos.x !== 0 || pos.y !== 0,
   );
@@ -153,37 +196,28 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    const fitMobileTitleToWidth = () => {
+    const fit = () => {
       const wrap = mobileTitleWrapRef.current;
       const measure = mobileTitleMeasureRef.current;
       if (!wrap || !measure) return;
-
-      const availableWidth = wrap.clientWidth;
-      const measuredWidth = measure.getBoundingClientRect().width;
-      if (availableWidth <= 0 || measuredWidth <= 0) return;
-
-      const currentFontSize = Number.parseFloat(
-        getComputedStyle(measure).fontSize,
-      );
-      if (!Number.isFinite(currentFontSize) || currentFontSize <= 0) return;
-
-      const nextFontSize = (availableWidth / measuredWidth) * currentFontSize;
+      const available = wrap.clientWidth;
+      const measured = measure.getBoundingClientRect().width;
+      if (available <= 0 || measured <= 0) return;
+      const fontSize = parseFloat(getComputedStyle(measure).fontSize);
+      if (!Number.isFinite(fontSize) || fontSize <= 0) return;
+      const next = (available / measured) * fontSize;
       setMobileTitleFontSizePx((prev) =>
-        Math.abs(prev - nextFontSize) < 0.25 ? prev : nextFontSize,
+        Math.abs(prev - next) < 0.25 ? prev : next,
       );
     };
-
-    fitMobileTitleToWidth();
-
-    const resizeObserver = new ResizeObserver(fitMobileTitleToWidth);
-    if (mobileTitleWrapRef.current) {
+    fit();
+    const resizeObserver = new ResizeObserver(fit);
+    if (mobileTitleWrapRef.current)
       resizeObserver.observe(mobileTitleWrapRef.current);
-    }
-
-    globalThis.addEventListener("resize", fitMobileTitleToWidth);
+    window.addEventListener("resize", fit);
     return () => {
       resizeObserver.disconnect();
-      globalThis.removeEventListener("resize", fitMobileTitleToWidth);
+      window.removeEventListener("resize", fit);
     };
   }, []);
 
@@ -224,7 +258,12 @@ export default function HomePage() {
           )}
           <nav className="flex items-center gap-3 w-full md:justify-end justify-center">
             {items.map((it) => (
-              <MenuItem key={it.href} href={it.href} label={it.label} />
+              <MenuItem
+                key={it.href}
+                href={it.href}
+                label={it.label}
+                underConstruction={it.underConstruction}
+              />
             ))}
           </nav>
         </div>
