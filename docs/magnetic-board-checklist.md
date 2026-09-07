@@ -3,7 +3,7 @@
 Each numbered entry corresponds to a separate implementation commit. Checked implementation work does not imply unavailable browser verification passed.
 
 - [x] 01 Isolate homepage board components; preserve existing letter styling.
-- [ ] 02 Define shared board items and desktop/mobile arrangements.
+- [x] 02 Define shared board items and desktop/mobile arrangements.
 - [ ] 03 Prepare steel, paper, and project assets.
 - [ ] 04 Add steel scene and shared lighting.
 - [ ] 05 Add hybrid HTML shadow/occlusion prototype.
