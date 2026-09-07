@@ -157,8 +157,6 @@ const NAME_CHARS = 'Kalina'.split('');
 export default function HomePage() {
   const desktopTitleSize = 'min(50vh, 38vw)';
   const titleBottomTrim = '0.12em';
-  const desktopFingerprintTransform = 'translate(-50%, -13%) rotate(40deg) scale(2)';
-  const mobileFingerprintTransform = 'translate(-45%, -40%) rotate(17deg) scale(1.5)';
 
   const mobileTitleWrapRef = useRef<HTMLHeadingElement | null>(null);
   const mobileTitleMeasureRef = useRef<HTMLSpanElement | null>(null);
@@ -246,31 +244,9 @@ export default function HomePage() {
 
       <div className="fixed inset-0 z-10 pointer-events-none">
         <img
-          className="absolute left-0 bottom-0 hidden origin-bottom-left object-contain md:block"
-          src="/images/652973.svg"
+          className="h-full w-full object-cover object-center"
+          src="/images/Texturelabs_Metal_228L.jpg"
           alt=""
-          style={{
-            width: '140vw',
-            height: '140vh',
-            opacity: 0.88,
-            transform: desktopFingerprintTransform,
-            transformOrigin: 'bottom left',
-          }}
-          aria-hidden="true"
-        />
-        <img
-          className="absolute left-0 bottom-0 block origin-bottom-left object-contain md:hidden"
-          src="/images/652973.svg"
-          alt=""
-          style={{
-            width: '190vw',
-            height: '190vh',
-            maxHeight: '140vw',
-            maxWidth: '140vh',
-            opacity: 0.88,
-            transform: mobileFingerprintTransform,
-            transformOrigin: 'bottom left',
-          }}
           aria-hidden="true"
         />
       </div>
