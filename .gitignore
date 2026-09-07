@@ -54,3 +54,4 @@ dev/
 !.dev.vars.example
 
 !.env.example
+.DS_Store
