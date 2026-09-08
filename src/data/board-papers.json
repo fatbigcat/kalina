@@ -1,0 +1,38 @@
+[
+  {
+    "id": "hello",
+    "label": "Hello note",
+    "type": "crumpled",
+    "width": 256,
+    "rotation": -5,
+    "writingStyle": "pen",
+    "fontSize": 25,
+    "paddingTop": 21,
+    "paddingRight": 13,
+    "paddingBottom": 13,
+    "paddingLeft": 14,
+    "magnetX": 50,
+    "magnetY": 3,
+    "magnet": "auto",
+    "text": "I make silly little websites, play music and experiment with 3d art",
+    "magnetSize": 24.3
+  },
+  {
+    "id": "progress",
+    "label": "Work in progress note",
+    "type": "vellum",
+    "width": 210,
+    "rotation": 4,
+    "writingStyle": "marker",
+    "fontSize": 27,
+    "paddingTop": 14,
+    "paddingRight": 12,
+    "paddingBottom": 14,
+    "paddingLeft": 12,
+    "magnetX": 78,
+    "magnetY": 3,
+    "magnet": "chair-black",
+    "text": "there will be more projects listed here in the future, but for now I am working on the layout!",
+    "magnetSize": 35.3
+  }
+]

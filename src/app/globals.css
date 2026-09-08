@@ -51,9 +51,189 @@ body {
 .display_font {
   font-family: Cometo, Commons, sans-serif;
 }
+.magnet-item:focus {
+  outline: none;
+}
+.magnet-item:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+.title-magnet-heading {
+  font-size: var(--mobile-title-size, 120px);
+  /* Preserve the old glyph advances in both the HTML and Three.js font. */
+  font-kerning: none;
+  font-variant-ligatures: none;
+}
+@media (min-width: 768px) {
+  .title-magnet-heading { font-size: min(40vh, 28vw); }
+}
+.title-magnet {
+  /* A circular ring of sharp shadows rounds the outline without changing glyph metrics. */
+  text-shadow:
+    0.012em 0 0 #fff,
+    0.01159em 0.00311em 0 #fff,
+    0.01039em 0.006em 0 #fff,
+    0.00849em 0.00849em 0 #fff,
+    0.006em 0.01039em 0 #fff,
+    0.00311em 0.01159em 0 #fff,
+    0 0.012em 0 #fff,
+    -0.00311em 0.01159em 0 #fff,
+    -0.006em 0.01039em 0 #fff,
+    -0.00849em 0.00849em 0 #fff,
+    -0.01039em 0.006em 0 #fff,
+    -0.01159em 0.00311em 0 #fff,
+    -0.012em 0 0 #fff,
+    -0.01159em -0.00311em 0 #fff,
+    -0.01039em -0.006em 0 #fff,
+    -0.00849em -0.00849em 0 #fff,
+    -0.006em -0.01039em 0 #fff,
+    -0.00311em -0.01159em 0 #fff,
+    0 -0.012em 0 #fff,
+    0.00311em -0.01159em 0 #fff,
+    0.006em -0.01039em 0 #fff,
+    0.00849em -0.00849em 0 #fff,
+    0.01039em -0.006em 0 #fff,
+    0.01159em -0.00311em 0 #fff;
+}
+[data-title-ready] .title-magnet {
+  color: transparent;
+  text-shadow: none;
+}
 .geekette-font {
   font-family: Geekette, Arial, Helvetica, sans-serif;
 }
 .norms-font {
   font-family: Norms, Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: Belmonte;
+  src: url('/fonts/Belmonte-Ballpoint-Cursive.Br-BZhnd.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: Naturalist;
+  src: url('/fonts/Naturalist-Regular.CRwzkIza.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: Notemakers;
+  src: url('/fonts/Notemakers-Mark-Regular.CuKuyxjU.ttf') format('truetype');
+  font-display: swap;
+}
+@layer components {
+.paper-frame,
+.paper-board-item {
+  width: 240px;
+  max-width: 100%;
+}
+.paper-frame {
+  position: relative;
+}
+.paper {
+  position: relative;
+  display: block;
+  isolation: isolate;
+}
+.paper-surface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Stretch the complete image, including its original alpha edges. Never crop. */
+  object-fit: fill;
+  pointer-events: none;
+  filter: drop-shadow(1px 2px 1px rgb(35 29 19 / 0.2));
+}
+.paper-vellum {
+  /* Let the board show through; warmth belongs to the sheet, not a grey fill. */
+  background: rgb(255 242 209 / 0.34);
+}
+.paper-vellum::before,
+.paper-vellum::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-size: 100% 100%;
+  mix-blend-mode: multiply;
+}
+.paper-vellum::before {
+  background-image: url('/images/paper/light-stained-paper-textured_53876-94322.avif');
+  filter: contrast(1.8) sepia(0.3);
+  opacity: 0.28;
+}
+.paper-vellum::after {
+  background-image: url('/images/paper/paper-texture_23-2147786515.avif');
+  background-size: 220px 147px;
+  filter: contrast(2.4) sepia(0.25);
+  opacity: 0.22;
+}
+.paper-writing {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  box-sizing: border-box;
+}
+.written-text {
+  font-family: Belmonte, cursive;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: rgb(38 47 67 / 0.86);
+  mix-blend-mode: multiply;
+}
+span.written-text {
+  display: inline-block;
+}
+.written-text[data-writing-style='pencil'] {
+  font-family: Naturalist, cursive;
+  color: rgb(59 54 48 / 0.78);
+}
+.written-text[data-writing-style='marker'] {
+  font-family: Notemakers, cursive;
+  color: rgb(39 37 32 / 0.94);
+}
+.paper-magnet {
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  filter:
+    drop-shadow(1px 3px 2px rgb(0 0 0 / 0.38))
+    drop-shadow(0 6px 5px rgb(0 0 0 / 0.16));
+}
+.paper-editor {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 60;
+  width: min(310px, calc(100vw - 32px));
+  max-height: min(75svh, 760px);
+  overflow: auto;
+  border: 1px solid #666;
+  border-radius: 8px;
+  background: #252525;
+  color: #f5f2ea;
+  padding: 12px;
+  font: 14px/1.4 Commons, sans-serif;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.25);
+}
+.paper-editor summary { cursor: pointer; }
+.paper-editor form { margin-top: 16px; }
+.paper-editor fieldset { display: grid; gap: 12px; }
+.paper-editor label { display: grid; gap: 4px; }
+.paper-editor label > span { display: flex; justify-content: space-between; }
+.paper-editor :is(select, textarea, button) {
+  border: 1px solid #777;
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: #343434;
+  color: inherit;
+  width: 100%;
+}
+.paper-editor input { width: 100%; accent-color: #e0cda8; }
+.paper-editor textarea { resize: vertical; }
+.paper-editor button { cursor: pointer; }
+.paper-editor button:disabled { opacity: 0.45; cursor: default; }
+.paper-editor :focus-visible { outline: 2px solid #e0cda8; outline-offset: 3px; }
+.paper-editor [role='status'] { margin-top: 12px; font-size: 12px; }
 }
